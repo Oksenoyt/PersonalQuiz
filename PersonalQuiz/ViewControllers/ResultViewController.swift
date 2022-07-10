@@ -9,11 +9,6 @@ import UIKit
 
 class ResultViewController: UIViewController {
     
-    // 1. Передать массив с ответами на экран с результатами
-    // 2. Определить наиболее часто встречающийся тип животного
-    // 3. Отобразить результаты в соответствии с этим животным
-    // 4. Избавиться от кнопки возврата назад на экране результатов
-    
     @IBOutlet var animalLabel: UILabel!
     @IBOutlet var descriptionLabel: UILabel!
     
@@ -21,18 +16,30 @@ class ResultViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        let reduced = answers.reduce( [], +).reduce( [], +).reduce( [], +)
-//        let flatMapped = answers.flatMap { $0 }.flatMap { $0 }.flatMap { $0 }
-//        print(flatMapped)
-        
+        animalLabel.text = "\(findingAnimal()?.rawValue ?? " ")"
+        descriptionLabel.text = "\(findingAnimal()?.definition ?? " ")"
+        navigationItem.setHidesBackButton(true, animated: false)
     }
     
     @IBAction func doneButtonPressed(_ sender: UIBarButtonItem) {
         navigationController?.dismiss(animated: true)
     }
     
-//    deinit {
-//        print("ResultViewController has been deallocated")
-//    }
+}
+
+extension ResultViewController {
+
+    private func findingAnimal() -> Animal? {
+        
+        var separetedAnswers: [Animal] = []
+        for answer in answers {
+            separetedAnswers.append(answer.animal)
+        }
+        
+        let mappedAnswers = separetedAnswers.map { ($0, 1) }
+        let finalAnimal = Dictionary(mappedAnswers, uniquingKeysWith: +)
+        let sortedAnimals = finalAnimal.sorted { $0.value > $1.value }
+
+        return sortedAnimals.first?.key
+    }
 }
